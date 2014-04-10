@@ -1,0 +1,17 @@
+/* #include <math.h> */
+/* #include <stdio.h> */
+/* #include <stdint.h> */
+
+#define debug(var) printf(#var "=%d\n",var)
+
+
+void func(int i){
+	debug(i);
+}
+
+int main()
+{
+	int i;
+	func(i);
+	func(
+}
