@@ -145,3 +145,4 @@
   (global-auto-complete-mode t))
 
 (my-ac-config)
+(put 'upcase-region 'disabled nil)

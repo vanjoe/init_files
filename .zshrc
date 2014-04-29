@@ -77,3 +77,11 @@ alias s="git status"
 # bind f5 to recompile
 setopt No_HIST_VERIFY
 bindkey -s '\e[15~' '!make\n'
+
+make(){
+	 local RED=`echo -e '\033[1;31m'`
+	 local YELLOW=`echo -e '\033[1;33m'`
+	 local NORMAL=`echo -e '\033[0m'`
+	 /usr/bin/make $@ 2> >(sed -e "s/\(^.*:[0-9]*:[0-9]*:* error\)/$RED \1 $NORMAL/"\
+                              -e "s/\(^.*:[0-9]*:[0-9]*:* warning\)/$YELLOW \1 $NORMAL/")
+}
