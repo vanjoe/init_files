@@ -4,16 +4,16 @@
 all: $(HOME)/.zshrc $(HOME)/.oh-my-zsh $(HOME)/.bashrc $(HOME)/.emacs.d  $(HOME)/.emacs
 
 $(HOME)/.zshrc: .zshrc
-	ln -sf $@ $<
+	ln -sf $< $@
 
 $(HOME)/.oh-my-zsh: /usr/bin/git
 	curl -L http://install.ohmyz.sh | sh
 
 $(HOME)/.bashrc: .bashrc
-	ln -sf $@ $<
+	ln -sf $< $@
 
 $(HOME)/.emacs.d: .emacs.d
-	ln -sf $@ $<
+	ln -sf $< $@
 
 $(HOME)/.emacs: .emacs
-	ln -sf $@ $<
+	ln -sf $< $@
