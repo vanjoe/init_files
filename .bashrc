@@ -25,13 +25,7 @@ shopt -s checkwinsize
 
 
 # If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
+
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -88,7 +82,11 @@ function git_branch(){
 		  echo "($(git rev-parse --abbrev-ref HEAD))"
 	 fi
 }
-PS1='\[\033]0;\u@\h: \w\007\]\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(git_branch)$ '
+function host_name(){
+	test -n "$SSH_TTY" && echo "@$HOSTNAME"
+}
+
+PS1='\[\033]0;\u$(host_name): \w\007\]\[\033[01;32m\]\u$(host_name)\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(git_branch)$ '
 
 # /home is a symlink to /nfs/home, correct it so we get a tilde
 [ $(pwd) == "/nfs$HOME" ] && cd $HOME
@@ -104,7 +102,7 @@ export XILINXD_LICENSE_FILE=2100@vax
 unset XILINX_TOOLS
 
 #load altera path
-PATH="$PATH:/nfs/opt/altera/13.0sp1/nios2eds/bin/gnu/H-i686-pc-linux-gnu/bin:/nfs/opt/altera/13.0sp1/nios2eds/sdk2/bin:/nfs/opt/altera/13.0sp1/nios2eds/bin:/nfs/opt/altera/13.0sp1/modelsim_ae/linuxaloem:/nfs/opt/altera/13.0sp1/quartus/bin:/nfs/opt/altera/13.0sp1/quartus/sopc_builder/bin"
+#PATH="$PATH:/nfs/opt/altera/13.0sp1/nios2eds/bin/gnu/H-i686-pc-linux-gnu/bin:/nfs/opt/altera/13.0sp1/nios2eds/sdk2/bin:/nfs/opt/altera/13.0sp1/nios2eds/bin:/nfs/opt/altera/13.0sp1/modelsim_ae/linuxaloem:/nfs/opt/altera/13.0sp1/quartus/bin:/nfs/opt/altera/13.0sp1/quartus/sopc_builder/bin"
 export EDITOR=vim
 #start emacs server
 emacs --daemon 2>/dev/null
@@ -125,7 +123,7 @@ make(){
 	 local YELLOW=`echo -e '\033[1;33m'`
 	 local NORMAL=`echo -e '\033[0m'`
 	 /usr/bin/make $@ 2> >(sed -e "s/\(^.*:[0-9]*:[0-9]*:* error\)/$RED \1 $NORMAL/"\
-                              -e "s/\(^.*:[0-9]*:[0-9]*:* warning\)/$YELLOW \1 $NORMAL/")
+                              -e "s/\(^.*:[0-9]*:[0-9]*:* warning\)/$YELLOW \1 $NORMAL/" >&2 )
 }
 
 #give us a cute little saying at the beginning of our session
