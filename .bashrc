@@ -81,9 +81,9 @@ function git_branch(){
 	 then
 		  if (git status | grep -q "working directory clean" )
 		  then
-				echo -n "($(git rev-parse --abbrev-ref HEAD))"
+				echo -n " ($(git rev-parse --abbrev-ref HEAD))"
 		  else
-				echo -n "($(git rev-parse --abbrev-ref HEAD)*)"
+				echo -n " ($(git rev-parse --abbrev-ref HEAD)*)"
 		  fi
 	 fi
 }
@@ -91,7 +91,7 @@ function host_name(){
 	test -n "$SSH_TTY" && echo "@$HOSTNAME"
 }
 
-PS1='\[\033]0;\u$(host_name): \w\007\]\[\033[01;32m\]\u$(host_name)\[\033[00m\]:\[\033[01;34m\]\w $(git_branch) $\[\033[00m\] '
+PS1='\[\033]0;\u$(host_name): \w\007\]\[\033[01;32m\]\u$(host_name)\[\033[00m\]:\[\033[01;34m\]\w$(git_branch) $\[\033[00m\] '
 
 # /home is a symlink to /nfs/home, correct it so we get a tilde
 [ $(pwd) == "/nfs$HOME" ] && cd $HOME
