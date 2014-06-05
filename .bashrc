@@ -79,14 +79,19 @@ PATH="$HOME/bin:$PATH"
 function git_branch(){
 	 if git rev-parse --abbrev-ref HEAD >/dev/null 2>/dev/null
 	 then
-		  echo "($(git rev-parse --abbrev-ref HEAD))"
+		  if (git status | grep -q "working directory clean" )
+		  then
+				echo -n "($(git rev-parse --abbrev-ref HEAD))"
+		  else
+				echo -n "($(git rev-parse --abbrev-ref HEAD)*)"
+		  fi
 	 fi
 }
 function host_name(){
 	test -n "$SSH_TTY" && echo "@$HOSTNAME"
 }
 
-PS1='\[\033]0;\u$(host_name): \w\007\]\[\033[01;32m\]\u$(host_name)\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(git_branch)$ '
+PS1='\[\033]0;\u$(host_name): \w\007\]\[\033[01;32m\]\u$(host_name)\[\033[00m\]:\[\033[01;34m\]\w $(git_branch) $\[\033[00m\] '
 
 # /home is a symlink to /nfs/home, correct it so we get a tilde
 [ $(pwd) == "/nfs$HOME" ] && cd $HOME
@@ -118,12 +123,16 @@ get(){
 
 export ORGANIZATION="Vectorblox Computing Inc."
 
-make(){
-	 local RED=`echo -e '\033[1;31m'`
+make_filter(){
+ 	 local RED=`echo -e '\033[1;31m'`
 	 local YELLOW=`echo -e '\033[1;33m'`
 	 local NORMAL=`echo -e '\033[0m'`
-	 /usr/bin/make $@ 2> >(sed -e "s/\(^.*:[0-9]*:[0-9]*:* error\)/$RED \1 $NORMAL/"\
-                              -e "s/\(^.*:[0-9]*:[0-9]*:* warning\)/$YELLOW \1 $NORMAL/" >&2 )
+	 sed -e "s/\(^.*:[0-9]*:[0-9]*:* error\)/$RED \1 $NORMAL/"\
+        -e "s/\(^.*:[0-9]*:[0-9]*:* warning\)/$YELLOW \1 $NORMAL/"
+}
+
+make(){
+	 /usr/bin/make $@ 2> >(make_filter>&2)
 }
 
 #give us a cute little saying at the beginning of our session
