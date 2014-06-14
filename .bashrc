@@ -93,10 +93,10 @@ PS1='\[\033]0;\u$(host_name): \w\007\]\[\033[01;32m\]\u$(host_name)\[\033[00m\]:
 bind '"\e[15~": "!make\n"'
 
 #load xilinx tools
-XILINX_TOOLS="/nfs/opt/xilinx/latest/ISE_DS/settings64.sh"
-test -f $XILINX_TOOLS && source $XILINX_TOOLS >/dev/null
-export XILINXD_LICENSE_FILE=2100@vax
-unset XILINX_TOOLS
+#XILINX_TOOLS="/nfs/opt/xilinx/latest/ISE_DS/settings64.sh"
+#test -f $XILINX_TOOLS && source $XILINX_TOOLS >/dev/null
+#export XILINXD_LICENSE_FILE=2100@vax
+#unset XILINX_TOOLS
 
 #load altera path
 export EDITOR=vim
@@ -106,6 +106,15 @@ get(){
 	awk "{print \$$1}"
 }
 
+calc(){
+	 EXPRN=$(echo "'$@'")
+	 echo -n $EXPRN
+	 echo -n " = "
+	 python -c "
+from __future__ import division
+from math import *
+print eval($EXPRN)"
+}
 export ORGANIZATION="Vectorblox Computing Inc."
 
 make_filter(){
