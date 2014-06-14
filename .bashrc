@@ -52,6 +52,10 @@ alias s='git status'
 # sources /etc/bash.bashrc).
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
+	 # ignore case
+	 bind "set completion-ignore-case on"
+	 # make it so you don't have to double click to show ambiguous
+
 fi
 
 if [ -f /usr/share/source-highlight/src-hilite-lesspipe.sh ]; then
@@ -93,10 +97,13 @@ PS1='\[\033]0;\u$(host_name): \w\007\]\[\033[01;32m\]\u$(host_name)\[\033[00m\]:
 bind '"\e[15~": "!make\n"'
 
 #load xilinx tools
-#XILINX_TOOLS="/nfs/opt/xilinx/latest/ISE_DS/settings64.sh"
-#test -f $XILINX_TOOLS && source $XILINX_TOOLS >/dev/null
-#export XILINXD_LICENSE_FILE=2100@vax
-#unset XILINX_TOOLS
+XILINX_TOOLS="/nfs/opt/xilinx/latest/ISE_DS/settings64.sh"
+if test -f $XILINX_TOOLS
+then
+ source $XILINX_TOOLS >/dev/null
+ export XILINXD_LICENSE_FILE=2100@vax
+fi
+unset XILINX_TOOLS
 
 #load altera path
 export EDITOR=vim
