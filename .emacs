@@ -147,3 +147,7 @@
 (put 'upcase-region 'disabled nil)
 ;dont break hard links
 (setq backup-by-copying-when-linked t)
+
+;;case insensitive file name completion
+(setq read-file-name-completion-ignore-case t)
+(setq read-buffer-completion-ignore-case t)
