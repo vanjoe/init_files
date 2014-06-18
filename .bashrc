@@ -133,7 +133,12 @@ make_filter(){
 }
 
 make(){
-	 /usr/bin/make $@ 2> >(make_filter>&2)
+	 if [ -t 2 ] #if stderr is a tty, color output
+	 then
+		  /usr/bin/make $@ 2> >(make_filter>&2)
+	 else   #run  make normally
+		  /usr/bin/make $@
+	 fi
 }
 
 #give us a cute little saying at the beginning of our session
