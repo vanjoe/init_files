@@ -142,4 +142,8 @@ make(){
 }
 
 #give us a cute little saying at the beginning of our session
-fortune
+command fortune >/dev/null 2>&1 && fortune
+### ONE LINERS ###
+
+#set baud rate
+# stty -F /dev/ttyACM0 9600
