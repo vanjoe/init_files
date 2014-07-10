@@ -147,3 +147,8 @@ command fortune >/dev/null 2>&1 && fortune
 
 #set baud rate
 # stty -F /dev/ttyACM0 9600
+
+#list contents of tarball
+#tar -tvf file.tar
+#tar -ztvf file.tar.gz
+#tar -jtvf file.tar.bz2
