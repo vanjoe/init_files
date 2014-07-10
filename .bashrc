@@ -143,8 +143,18 @@ make(){
 
 #give us a cute little saying at the beginning of our session
 command fortune >/dev/null 2>&1 && fortune
-### ONE LINERS ###
 
+git-top(){
+	 git rev-parse --show-toplevel
+}
+init_vblox(){
+	 pushd $(git-top) > /dev/null
+	 cp example_config.mk config.mk
+	 cp example_program.mk program.mk
+	 popd >/dev/null
+}
+
+### ONE LINERS ###
 #set baud rate
 # stty -F /dev/ttyACM0 9600
 
@@ -152,3 +162,6 @@ command fortune >/dev/null 2>&1 && fortune
 #tar -tvf file.tar
 #tar -ztvf file.tar.gz
 #tar -jtvf file.tar.bz2
+
+#get top level of git repo
+#git rev-parse --show-toplevel
