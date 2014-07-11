@@ -153,7 +153,11 @@ init_vblox(){
 	 cp example_program.mk program.mk
 	 popd >/dev/null
 }
-
+git-origin(){
+	 pushd $(git-top) > /dev/null
+	 grep -C1 "\[remote" .git/config
+	 popd >/dev/null
+}
 ### ONE LINERS ###
 #set baud rate
 # stty -F /dev/ttyACM0 9600
