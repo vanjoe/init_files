@@ -17,6 +17,16 @@
 
 ;;disable toolbar
 (tool-bar-mode -1)
+;;remove scroll bar
+(scroll-bar-mode -1)
+
+;;set color theme
+(package-initialize)
+(require 'color-theme)
+(setq color-theme-is-global t)
+(color-theme-initialize)
+(color-theme-clarity)
+(add-to-list 'default-frame-alist '(background-color . "grey15"))
 
 ;;hideshow mode
 (add-hook 'c-mode-common-hook
@@ -46,13 +56,6 @@
 (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'python 'ruby )
 (setq-default tab-width 3)
 
-;;set color theme
-(package-initialize)
-(require 'color-theme)
-(setq color-theme-is-global t)
-(color-theme-initialize)
-(color-theme-clarity)
-(add-to-list 'default-frame-alist '(background-color . "grey15"))
 
 (when (display-graphic-p)
     (lambda (global-hl-line-mode t)))
@@ -80,10 +83,7 @@
 (global-set-key [f5] 'recompile)
 (setq compilation-ask-about-save nil)
 (setq compilation-scroll-output 'first-error)
-;;smoother scrolling
-;;http://www.emacswiki.org/emacs/download/smooth-scroll.el
-(require 'smooth-scroll)
-(smooth-scroll-mode t)
+
 ;;smaller font
 ;(set-face-attribute 'default nil :height 100)
 
@@ -151,3 +151,9 @@
 ;;case insensitive file name completion
 (setq read-file-name-completion-ignore-case t)
 (setq read-buffer-completion-ignore-case t)
+
+;add a function to set the title of the window
+(defun set_frame_title ( title )
+ "Set title for emacs window"
+ (interactive "stitle: \n")
+ (setq frame-title-format title))
