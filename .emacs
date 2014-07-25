@@ -83,7 +83,10 @@
 (global-set-key [f5] 'recompile)
 (setq compilation-ask-about-save nil)
 (setq compilation-scroll-output 'first-error)
-
+;;smoother scrolling
+;;http://www.emacswiki.org/emacs/download/smooth-scroll.el
+(require 'smooth-scroll)
+(smooth-scroll-mode t)
 ;;smaller font
 ;(set-face-attribute 'default nil :height 100)
 
@@ -151,34 +154,3 @@
 ;;case insensitive file name completion
 (setq read-file-name-completion-ignore-case t)
 (setq read-buffer-completion-ignore-case t)
-
-;add a function to set the title of the window
-(defun set_frame_title ( title )
- "Set title for emacs window"
- (interactive "stitle: \n")
- (setq frame-title-format title))
-
-;;add a function to automatically add header guards
-(defun add-c-header-guard()
-  "Add an automatically generated header guard to c/c++ files"
-  (interactive)
-  (if (buffer-file-name)
-		(let*
-			 ((fName (upcase (file-name-nondirectory (file-name-sans-extension buffer-file-name))))
-			  (fExt (upcase(file-name-nondirectory (file-name-extension buffer-file-name))))
-			  (guard (concat "__" fName "_" fExt "__"))
-			  (ifDef (concat "#ifndef " guard "\n#define " guard "\n"))
-			  (begin (point-marker))
-			  )
-		  (progn
-			 ;;Insert the Header Guard
-			 (goto-char (point-min))
-			 (insert ifDef)
-			 (goto-char (point-max))
-			 (insert "\n#endif" " //" guard)
-			 (goto-char begin))
-		  )
-	 ;;else
-	 (message (concat "Buffer " (buffer-name) " must have a filename"))
-	 )
-  )

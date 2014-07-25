@@ -157,10 +157,19 @@ init_vblox(){
 	 cp example_program.mk program.mk
 	 popd >/dev/null
 }
-
+git-origin(){
+	 pushd $(git-top) > /dev/null
+	 grep -C1 "\[remote" .git/config
+	 popd >/dev/null
+}
 ### ONE LINERS ###
 #set baud rate
 # stty -F /dev/ttyACM0 9600
+
+#list contents of tarball
+#tar -tvf file.tar
+#tar -ztvf file.tar.gz
+#tar -jtvf file.tar.bz2
 
 #get top level of git repo
 #git rev-parse --show-toplevel
