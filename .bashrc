@@ -71,26 +71,27 @@ bind '"\eOA": history-search-backward'
 bind '"\eOB": history-search-forward'
 PATH="$HOME/bin:$PATH"
 
-
+###############
+#PS1 GENERATION
 function git_branch(){
 	 if git rev-parse --abbrev-ref HEAD >/dev/null 2>/dev/null
 	 then
-		  if (git status | grep -q "working directory clean" )
-		  then
-				echo -n " ($(git rev-parse --abbrev-ref HEAD))"
-		  else
-				echo -n " ($(git rev-parse --abbrev-ref HEAD)*)"
-		  fi
+		  echo -n "($(git rev-parse --abbrev-ref HEAD))"
 	 fi
 }
-function host_name(){
-	test -n "$SSH_TTY" && echo "@$HOSTNAME"
+function num_job(){
+	 local NUM_JOBS=$(jobs | wc -l)
+	 [ $NUM_JOBS -gt 0 ] && echo "(jobs:$NUM_JOBS)"
 }
-
-PS1='\[\033]0;\u$(host_name): \w\007\]\[\033[01;32m\]\u$(host_name)\[\033[00m\]:\[\033[01;34m\]\w$(git_branch) $\[\033[00m\] '
+if [ -n "$SSH_TTY" ]
+then
+	 PS1='\[\033]0;\u@\h: \w\007\]\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w $(git_branch)\n \$\[\033[00m\] '
+else
+	 PS1='\[\033]0;\u: \w\007\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]$(num_job)\w $(git_branch)\n \$\[\033[00m\] '
+fi
 
 # /home is a symlink to /nfs/home, correct it so we get a tilde
-[ $(pwd) == "/nfs$HOME" ] && cd $HOME
+cd $( pwd | sed -e "s|/nfs\($HOME.*\)|\1|")
 
 #bind F5 to previous make command
 #to find escape character from F5 hit C-v and the F5
@@ -123,13 +124,16 @@ from math import *
 print eval($EXPRN)"
 }
 export ORGANIZATION="Vectorblox Computing Inc."
-
+export VECTORBLOX_SIM_LICENSE="PXOENCVQONIDQALT"
 make_filter(){
  	 local RED=`echo -e '\033[1;31m'`
 	 local YELLOW=`echo -e '\033[1;33m'`
+	 local GREEN=`echo -e '\033[1;32m'`
 	 local NORMAL=`echo -e '\033[0m'`
 	 sed -e "s/\(^.*:[0-9]*:[0-9]*:* error\)/$RED \1 $NORMAL/"\
-        -e "s/\(^.*:[0-9]*:[0-9]*:* warning\)/$YELLOW \1 $NORMAL/"
+        -e "s/\(^.*:[0-9]*:[0-9]*:* warning\)/$YELLOW \1 $NORMAL/"\
+        -e "s/\(^.*:[0-9]*:[0-9]*:* note\)/$GREEN \1 $NORMAL/"
+
 }
 
 make(){
