@@ -98,13 +98,27 @@ cd $( pwd | sed -e "s|/nfs\($HOME.*\)|\1|")
 bind '"\e[15~": "!make\n"'
 
 #load xilinx tools
-XILINX_TOOLS="/nfs/opt/xilinx/latest/ISE_DS/settings64.sh"
-if test -f $XILINX_TOOLS
-then
- source $XILINX_TOOLS >/dev/null
- export XILINXD_LICENSE_FILE=2100@vax
-fi
-unset XILINX_TOOLS
+
+function load_xilinx(){
+	 local SETTINGS="$1/settings64.sh"
+	 if test -f $SETTINGS
+	 then
+		  source $SETTINGS >/dev/null
+		  export XILINXD_LICENSE_FILE=2100@vax
+	 else
+		  echo "Unable to Open $SETTINGS" >/dev/stderr
+	 fi
+}
+function load_ise(){
+	 local ISE_DIR="/nfs/opt/xilinx/latest/ISE_DS/"
+	 load_xilinx $ISE_DIR
+	 export XILINX_ISE=1
+}
+function load_vivado(){
+	 local VIV_DIR="/nfs/opt/xilinx/Vivado/latest/"
+	 load_xilinx $VIV_DIR
+	 export XILINX_VIVADO=1
+}
 
 #load altera path
 export EDITOR=vim
@@ -171,5 +185,8 @@ git-origin(){
 #tar -ztvf file.tar.gz
 #tar -jtvf file.tar.bz2
 
-#get top level of git repo
+#get top level dir of git repo
 #git rev-parse --show-toplevel
+
+#print git DAG in terminal
+#git log --all --graph --decorate --oneline
