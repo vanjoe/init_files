@@ -29,13 +29,16 @@
 (add-to-list 'default-frame-alist '(background-color . "grey15"))
 
 ;;hideshow mode
-(add-hook 'c-mode-common-hook
-  (lambda()
-    (local-set-key (kbd "C-c <right>") 'hs-show-block)
-    (local-set-key (kbd "C-c <left>")  'hs-hide-block)
-    (local-set-key (kbd "C-c <up>")    'hs-hide-level)
-    (local-set-key (kbd "C-c <down>")  'hs-show-all)
-    (hs-minor-mode t)))
+
+(defun add-hs-mode()
+  (local-set-key (kbd "C-c <right>") 'hs-show-block)
+  (local-set-key (kbd "C-c <left>")  'hs-hide-block)
+  (local-set-key (kbd "C-c <up>")    'hs-hide-level)
+  (local-set-key (kbd "C-c <down>")  'hs-show-all)
+  (hs-minor-mode t)
+)
+(add-hook 'c-mode-common-hook 'add-hs-mode)
+(add-hook 'python-mode-hook 'add-hs-mode)
 
 ;;show matching parthenthesis
 (show-paren-mode 1)
@@ -154,3 +157,6 @@
 ;;case insensitive file name completion
 (setq read-file-name-completion-ignore-case t)
 (setq read-buffer-completion-ignore-case t)
+;rebind C-x d from some dired thing to delete region
+(global-unset-key "\C-x d")
+(global-set-key (kbd "C-x d") 'delete-region)
