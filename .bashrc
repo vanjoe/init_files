@@ -74,10 +74,11 @@ PATH="$HOME/bin:$PATH"
 ###############
 #PS1 GENERATION
 function git_branch(){
-	 if git rev-parse --abbrev-ref HEAD >/dev/null 2>/dev/null
-	 then
-		  echo -n "($(git rev-parse --abbrev-ref HEAD))"
-	 fi
+	local BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+	if [ -n "$BRANCH" ]
+	then
+		 echo -n "($BRANCH)"
+	fi
 }
 function num_job(){
 	 local NUM_JOBS=$(jobs | wc -l)
@@ -87,7 +88,7 @@ if [ -n "$SSH_TTY" ]
 then
 	 PS1='\[\033]0;\u@\h: \w\007\]\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w $(git_branch)\n \$\[\033[00m\] '
 else
-	 PS1='\[\033]0;\u: \w\007\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]$(num_job)\w $(git_branch)\n \$\[\033[00m\] '
+	 PS1='\[\033]0;\u: \w\007\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w $(git_branch)\n \$\[\033[00m\] '
 fi
 
 # /home is a symlink to /nfs/home, correct it so we get a tilde
