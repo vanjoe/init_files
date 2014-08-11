@@ -160,3 +160,6 @@
 ;rebind C-x d from some dired thing to delete region
 (global-unset-key "\C-x d")
 (global-set-key (kbd "C-x d") 'delete-region)
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
