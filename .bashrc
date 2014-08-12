@@ -92,7 +92,7 @@ else
 fi
 
 
-if [ [ -d /home ] && ls -l /home | grep -q '/home -> /nfs/home' ]
+if [ -d /home ] && ls -l /home | grep -q '/home -> /nfs/home'
 then
 	 # /home is a symlink to /nfs/home, correct it so we get a tilde
 	 cd $( pwd | sed -e "s|/nfs\($HOME.*\)|\1|")
