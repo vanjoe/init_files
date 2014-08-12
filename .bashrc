@@ -91,9 +91,12 @@ else
 	 PS1='\[\033]0;\u: \w\007\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w $(git_branch)\n \$\[\033[00m\] '
 fi
 
-# /home is a symlink to /nfs/home, correct it so we get a tilde
-cd $( pwd | sed -e "s|/nfs\($HOME.*\)|\1|")
 
+if [ [ -d /home ] && ls -l /home | grep -q '/home -> /nfs/home' ]
+then
+	 # /home is a symlink to /nfs/home, correct it so we get a tilde
+	 cd $( pwd | sed -e "s|/nfs\($HOME.*\)|\1|")
+fi
 #bind F5 to previous make command
 #to find escape character from F5 hit C-v and the F5
 bind '"\e[15~": "!make\n"'
