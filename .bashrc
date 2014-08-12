@@ -151,15 +151,23 @@ make_filter(){
 	 sed -e "s/\(^.*:[0-9]*:[0-9]*:* error\)/$RED \1 $NORMAL/"\
         -e "s/\(^.*:[0-9]*:[0-9]*:* warning\)/$YELLOW \1 $NORMAL/"\
         -e "s/\(^.*:[0-9]*:[0-9]*:* note\)/$GREEN \1 $NORMAL/"
-
 }
 
 make(){
+	 #in order to forward the arguments properly, we need to escape them
+	 ARGS=""
+	 for (( i=1;i<= $#; i++))
+	 do
+		  eval VAR=\$$i
+		  VAR=$(echo $VAR | sed 's/"/\\"/g')
+		  ARGS="$ARGS \"$VAR\""
+	 done
+
 	 if [ -t 2 ] #if stderr is a tty, color output
 	 then
-		  /usr/bin/make $@ 2> >(make_filter>&2)
+		  eval /usr/bin/make $ARGS 2> >(make_filter>&2)
 	 else   #run  make normally
-		  /usr/bin/make $@
+		  eval /usr/bin/make $ARGS
 	 fi
 }
 
