@@ -25,7 +25,7 @@ shopt -s checkwinsize
 
 
 # If this is an xterm set the title to user@host:dir
-
+export TERM=xterm-color
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -43,7 +43,7 @@ fi
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
-alias s='git status'
+alias s='git log | head -1 && git status'
 
 
 
@@ -54,8 +54,6 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 	 # ignore case
 	 bind "set completion-ignore-case on"
-	 # make it so you don't have to double click to show ambiguous
-
 fi
 
 if [ -f /usr/share/source-highlight/src-hilite-lesspipe.sh ]; then
@@ -91,12 +89,14 @@ else
 	 PS1='\[\033]0;\u: \w\007\]\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w $(git_branch)\n \$\[\033[00m\] '
 fi
 
-
-if [ -d /home ] && ls -l /home | grep -q '/home -> /nfs/home'
-then
-	 # /home is a symlink to /nfs/home, correct it so we get a tilde
-	 cd $( pwd | sed -e "s|/nfs\($HOME.*\)|\1|")
-fi
+fixdir(){
+	 if [ -d /home ] && ls -l /home | grep -q '/home -> /nfs/home'
+	 then
+		  # /home is a symlink to /nfs/home, correct it so we get a tilde
+		  cd $( pwd | sed -e "s|/nfs\($HOME.*\)|\1|")
+	 fi
+}
+fixdir
 #bind F5 to previous make command
 #to find escape character from F5 hit C-v and the F5
 bind '"\e[15~": "!make\n"'
@@ -141,6 +141,20 @@ from __future__ import division
 from math import *
 print eval($EXPRN)"
 }
+
+notify_joel(){
+	 python -c "import smtplib
+from email.mime.text import MIMEText
+msg = MIMEText('Notification sent from $(hostname)')
+me = 'joel@vectorblox.com'
+msg['Subject'] = '%s' % '$1'
+msg['From'] = me
+msg['To'] = me
+s = smtplib.SMTP('vax.vectorblox.local')
+s.sendmail(me, [me], msg.as_string())
+s.quit()
+"
+}
 export ORGANIZATION="Vectorblox Computing Inc."
 export VECTORBLOX_SIM_LICENSE="PXOENCVQONIDQALT"
 make_filter(){
@@ -170,7 +184,16 @@ make(){
 		  eval /usr/bin/make $ARGS
 	 fi
 }
-
+bluespec(){
+	 ARGS=""
+	 for (( i=1;i<= $#; i++))
+	 do
+		  eval VAR=\$$i
+		  VAR=$(echo $VAR | sed 's/"/\\"/g')
+		  ARGS="$ARGS \"$VAR\""
+	 done
+	 ssh altivec $ARGS
+}
 #give us a cute little saying at the beginning of our session
 command fortune >/dev/null 2>&1 && fortune
 
@@ -188,6 +211,34 @@ git-origin(){
 	 grep -C1 "\[remote" .git/config
 	 popd >/dev/null
 }
+
+copy-xil-build(){
+	 if [ $# -ne 1 ]
+	 then
+		  echo "Usage: $0 <build_dir>" > /dev/stderr
+		  return
+	 fi
+	 BUILD_DIR=$1
+	 if [ ! -f $BUILD_DIR/system.hdf ]
+	 then
+		  echo "$BUILD_DIR is not a valid build directory, does not contain file system.hdf" >/dev/null
+		  return
+	 fi
+	 echo "Copying files"
+	 cp -rL $BUILD_DIR/* .
+	 git checkout Makefile
+	 make ip_setup
+	 make -t hwspec_only &&	 make bsp
+}
+export BLUESPEC_HOME=/nfs/opt/bluespec/Bluespec-2014.05.C
+export BLUESPECDIR=$BLUESPEC_HOME/lib
+export BLUESPEC_LICENSE_FILE=2400@vax
+export PATH=${BLUESPEC_HOME}/bin:$PATH
+
+
+#allow cd with just the name
+shopt -s autocd
+
 ### ONE LINERS ###
 #set baud rate
 # stty -F /dev/ttyACM0 9600
@@ -202,3 +253,6 @@ git-origin(){
 
 #print git DAG in terminal
 #git log --all --graph --decorate --oneline
+
+#print all defines from gcc
+# gcc -dM -E - < /dev/null

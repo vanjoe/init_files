@@ -101,55 +101,8 @@
                 (remove-if-not 'buffer-file-name (buffer-list)))))
 
 ;;enable downcase region command
+
 (put 'downcase-region 'disabled nil)
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-(ac-config-default)
-(require 'auto-complete-c-headers)
-(add-to-list 'ac-sources 'ac-source-c-headers)
-
-(require 'auto-complete-clang-async)
-(setq ac-clang-flags
-      (mapcar (lambda (item)(concat "-I" item))
-              (split-string
-               "
- /nfs/home/joel/Documents/vblox.pristine/software/lib/altdemo
- /nfs/home/joel/Documents/vblox.pristine/software/lib/bsp
- /nfs/home/joel/Documents/vblox.pristine/software/lib/libfixmath
- /nfs/home/joel/Documents/vblox.pristine/software/lib/scalar
- /nfs/home/joel/Documents/vblox.pristine/software/lib/vbxapi
- /nfs/home/joel/Documents/vblox.pristine/software/lib/vbxint
- /nfs/home/joel/Documents/vblox.pristine/software/lib/vbxlib
- /nfs/home/joel/Documents/vblox.pristine/software/lib/vbxsim
- /nfs/home/joel/Documents/vblox.pristine/software/lib/vbxtest
- /nfs/home/joel/Documents/vblox.pristine/software/lib/vbxware
- /usr/include/c++/4.6
- /usr/include/c++/4.6/x86_64-linux-gnu/.
- /usr/include/c++/4.6/backward
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include
- /usr/local/include
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include-fixed
- /usr/include/x86_64-linux-gnu
- /usr/include
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include
- /usr/local/include
- /usr/lib/gcc/x86_64-linux-gnu/4.6/include-fixed
- /usr/include/x86_64-linux-gnu
-
-
-"
-               )))
-(defun ac-cc-mode-setup ()
-  (setq ac-clang-complete-executable "~/.emacs.d/clang-complete")
-  (setq ac-sources '(ac-source-clang-async))
-  (ac-clang-launch-completion-process)
-)
-
-(defun my-ac-config ()
-  (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
-  (add-hook 'auto-complete-mode-hook 'ac-common-setup)
-  (global-auto-complete-mode t))
-(my-ac-config)
 (put 'upcase-region 'disabled nil)
 ;dont break hard links
 (setq backup-by-copying-when-linked t)
@@ -163,3 +116,48 @@
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
+
+(defun add-c-header-guard ()
+  (interactive)
+  (if (buffer-file-name)
+		(let*
+			 ((fName (file-name-nondirectory (file-name-sans-extension buffer-file-name)))
+			  (guard (upcase (concat fName "_" (file-name-nondirectory (file-name-extension buffer-file-name)))))
+			  (ifDef (concat "#ifndef " guard "\n#define " guard "\n"))
+			  (begin (point-marker))
+			  )
+		  (progn
+			 ;;Insert the Header Guard
+			 (goto-char (point-min))
+			 (insert ifDef)
+			 (goto-char (point-max))
+			 (insert "\n#endif" " //" guard)
+			 (goto-char begin))
+		  )
+	 ;;else
+	 (message (concat "Buffer " (buffer-name) " must have a filename"))
+	 )
+  )
+
+
+
+(defun surround (begin end )
+  "Put OPEN at START and CLOSE at END of the region.
+If you omit CLOSE, it will reuse OPEN."
+  (interactive  "")
+  (save-excursion
+    (goto-char end)
+    (insert "hello")
+    (goto-char begin)
+    (insert "goodbye")))
+
+;;add upto as keyword to c++ mode
+(font-lock-add-keywords 'c++-mode
+  '(("upto" . font-lock-keyword-face)))
+
+;; use Shift+arrow_keys to move cursor around split panes
+(windmove-default-keybindings)
+;; when cursor is on edge, move to the other side, as in a toroidal space
+(setq windmove-wrap-around t )
+
+(require 'tablegen-mode)
