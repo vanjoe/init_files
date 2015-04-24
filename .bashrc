@@ -93,12 +93,14 @@ fixdir(){
 	 if [ $# -ne 1 ]
 	 then
 		  echo "usage: fixdir <directory>" >/dev/stderr
-		  return
+		  return -1
 	 fi
 	 if [ -d /home ] && ls -l /home | grep -q '/home -> /nfs/home'
 	 then
 		  # /home is a symlink to /nfs/home, correct it so we get a tilde
 		  echo $1 | sed -e "s|/nfs/home\(.*\)|/home\1|"
+	 else
+		  echo $1
 	 fi
 }
 cd $(fixdir $(pwd))
