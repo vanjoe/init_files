@@ -163,7 +163,7 @@ s.quit()
 "
 }
 export ORGANIZATION="Vectorblox Computing Inc."
-export VECTORBLOX_SIM_LICENSE=/nfs/data/simulator_license.lic
+export VECTORBLOX_SIM_LICENSE="PXOENCVQONIDQALT"
 make_filter(){
  	 local RED=`echo -e '\033[1;31m'`
 	 local YELLOW=`echo -e '\033[1;33m'`
@@ -205,7 +205,7 @@ bluespec(){
 command fortune >/dev/null 2>&1 && fortune
 
 git-top(){
-	 fixdir $(git rev-parse --show-toplevel)
+	 git rev-parse --show-toplevel
 }
 init_vblox(){
 	 pushd $(git-top) > /dev/null
@@ -232,8 +232,7 @@ copy-xil-build(){
 		  return
 	 fi
 	 echo "Copying files"
-	 cp -rL $(dirname $(ls $BUILD_DIR/*/*.xpr)) .
-	 cp $BUILD_DIR/system.hdf .
+	 cp -rL $BUILD_DIR/* .
 	 git checkout Makefile
 	 make ip_setup
 	 make -t hwspec_only &&	 make bsp
