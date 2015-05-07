@@ -161,3 +161,6 @@ If you omit CLOSE, it will reuse OPEN."
 (setq windmove-wrap-around t )
 
 (require 'tablegen-mode)
+
+(require 'neotree)
+(global-set-key [f8] 'neotree-toggle)

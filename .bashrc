@@ -90,13 +90,18 @@ else
 fi
 
 fixdir(){
+	 if [ $# -ne 1 ]
+	 then
+		  echo "usage: fixdir <directory>" >/dev/stderr
+		  return
+	 fi
 	 if [ -d /home ] && ls -l /home | grep -q '/home -> /nfs/home'
 	 then
 		  # /home is a symlink to /nfs/home, correct it so we get a tilde
-		  cd $( pwd | sed -e "s|/nfs\($HOME.*\)|\1|")
+		  echo $1 | sed -e "s|/nfs/home\(.*\)|/home\1|"
 	 fi
 }
-fixdir
+cd $(fixdir $(pwd))
 #bind F5 to previous make command
 #to find escape character from F5 hit C-v and the F5
 bind '"\e[15~": "!make\n"'
@@ -156,7 +161,7 @@ s.quit()
 "
 }
 export ORGANIZATION="Vectorblox Computing Inc."
-export VECTORBLOX_SIM_LICENSE="PXOENCVQONIDQALT"
+export VECTORBLOX_SIM_LICENSE=/nfs/data/simulator_license.lic
 make_filter(){
  	 local RED=`echo -e '\033[1;31m'`
 	 local YELLOW=`echo -e '\033[1;33m'`
@@ -198,7 +203,7 @@ bluespec(){
 command fortune >/dev/null 2>&1 && fortune
 
 git-top(){
-	 git rev-parse --show-toplevel
+	 fixdir $(git rev-parse --show-toplevel)
 }
 init_vblox(){
 	 pushd $(git-top) > /dev/null
@@ -225,7 +230,8 @@ copy-xil-build(){
 		  return
 	 fi
 	 echo "Copying files"
-	 cp -rL $BUILD_DIR/* .
+	 cp -rL $(dirname $(ls $BUILD_DIR/*/*.xpr)) .
+	 cp $BUILD_DIR/system.hdf .
 	 git checkout Makefile
 	 make ip_setup
 	 make -t hwspec_only &&	 make bsp
