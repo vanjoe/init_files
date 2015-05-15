@@ -93,14 +93,12 @@ fixdir(){
 	 if [ $# -ne 1 ]
 	 then
 		  echo "usage: fixdir <directory>" >/dev/stderr
-		  return -1
+		  return
 	 fi
 	 if [ -d /home ] && ls -l /home | grep -q '/home -> /nfs/home'
 	 then
 		  # /home is a symlink to /nfs/home, correct it so we get a tilde
 		  echo $1 | sed -e "s|/nfs/home\(.*\)|/home\1|"
-	 else
-		  echo $1
 	 fi
 }
 cd $(fixdir $(pwd))
@@ -163,7 +161,7 @@ s.quit()
 "
 }
 export ORGANIZATION="Vectorblox Computing Inc."
-export VECTORBLOX_SIM_LICENSE="PXOENCVQONIDQALT"
+export VECTORBLOX_SIM_LICENSE=/nfs/data/simulator_license.lic
 make_filter(){
  	 local RED=`echo -e '\033[1;31m'`
 	 local YELLOW=`echo -e '\033[1;33m'`
@@ -205,7 +203,7 @@ bluespec(){
 command fortune >/dev/null 2>&1 && fortune
 
 git-top(){
-	 git rev-parse --show-toplevel
+	 fixdir $(git rev-parse --show-toplevel)
 }
 init_vblox(){
 	 pushd $(git-top) > /dev/null
@@ -232,10 +230,32 @@ copy-xil-build(){
 		  return
 	 fi
 	 echo "Copying files"
-	 cp -rL $BUILD_DIR/* .
+	 cp -rL $(dirname $(ls $BUILD_DIR/*/*.xpr)) .
+	 cp $BUILD_DIR/system.hdf .
 	 git checkout Makefile
 	 make ip_setup
 	 make -t hwspec_only &&	 make bsp
+	 [ -x bsp/ps7_init.tcl ] && touch bsp/ps7_init.tcl
+}
+copy-nios-build(){
+	 if [ $# -ne 1 ]
+	 then
+		  echo "Usage: $0 <build_dir>" > /dev/stderr
+		  return
+	 fi
+	 BUILD_DIR=$1
+	 if [ ! -f $BUILD_DIR/vblox1.sof ]
+	 then
+		  echo "$BUILD_DIR is not a valid build directory, does not contain file vblox1.sof" >/dev/null
+		  return
+	 fi
+	 echo "Copying files"
+	 cp -r $BUILD_DIR/config.mk $BUILD_DIR/program.mk $BUILD_DIR/vblox1.* .
+	 make ipgen
+	 make -t vblox1.qsys
+	 make bsp
+
+
 }
 export BLUESPEC_HOME=/nfs/opt/bluespec/Bluespec-2014.05.C
 export BLUESPECDIR=$BLUESPEC_HOME/lib
