@@ -22,12 +22,12 @@
 
 ;;set color theme
 (package-initialize)
-(require 'color-theme)
-(setq color-theme-is-global t)
-(color-theme-initialize)
-(color-theme-clarity)
-(add-to-list 'default-frame-alist '(background-color . "grey15"))
-
+(when (require 'color-theme nil 'noerror)
+  (setq color-theme-is-global t)
+  (color-theme-initialize)
+  (color-theme-clarity)
+  (add-to-list 'default-frame-alist '(background-color . "grey15"))
+)
 ;;hideshow mode
 
 (defun add-hs-mode()
@@ -164,3 +164,6 @@ If you omit CLOSE, it will reuse OPEN."
 
 (require 'neotree)
 (global-set-key [f8] 'neotree-toggle)
+
+;;add transparency
+(set-frame-parameter (selected-frame) 'alpha '(90 90))
